@@ -1,33 +1,31 @@
 from flask import Flask
 from flask import request
-from redis import Redis, RedisError
-import os
-import socket
+from pymongo import MongoClient
+import pandas as pd
+from dna import import_data_frame, plot_agglomerative_cluster
+client = MongoClient('mongodb://goodoldtimes:HN88VIootmZYoM1feiOq0cqpReDHOJ3wdnF5EAbD02E0qNZrLVlSTSQXuMi9XPuNPX55cbK5E4ol4m8cbYIBXg==@goodoldtimes.documents.azure.com:10255/?ssl=true&replicaSet=globaldb')
+db = client['goodoldtimes']
 
-# Connect to Redis
-redis = Redis(host="redis", db=0, socket_connect_timeout=2, socket_timeout=2)
+usercollection = db['users']
 
 app = Flask(__name__)
 
-@app.route("/")
-def hello():
-    try:
-        visits = redis.incr("counter")
-    except RedisError:
-        visits = "<i>cannot connect to Redis, counter disabled</i>"
-
-    html = "<h3>Hello {name}!</h3>" \
-           "<b>Hostname:</b> {hostname}<br/>" \
-           "<b>Visits:</b> {visits}"
-    return html.format(name=os.getenv("NAME", "world"), hostname=socket.gethostname(), visits=visits)
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=80)
-
 @app.route('/users/<user_id>', methods = ['GET'])
-def get_user(user_id):
+def get_recommended_user(user_id):
     if request.method == 'GET':
-        return "hello"
+        users = pd.DataFrame(list(usercollection.find()))
+
+        dataset, additional_columns = import_data_frame(users)
+        columns = ['birthyear', 'lat', 'lng', 'gender_num', 'language_num'] + additional_columns
+        clusters= plot_agglomerative_cluster(dataset, columns)
+        dataset['category'] = clusters
+
+        print(dataset)
+
+        result = []
+        for user in usercollection.find():
+            result.append(user['name'])
+        return ', '.join(result)
     else:
         return "hello"
         # POST Error 405 Method Not Allowed
@@ -35,6 +33,10 @@ def get_user(user_id):
 @app.route('/users', methods = ['POST'])
 def create_user():
     if request.method == 'POST':
+        user = {
+            'name': 'Alex'
+        }
+        user_id = usercollection.insert_one(user).inserted_id
         #modify/update the information for <user_id>
         data = request.form
         # return user_id

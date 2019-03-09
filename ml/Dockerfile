@@ -1,20 +1,17 @@
-# Use an official Python runtime as a parent image
-FROM python:2.7-slim
+FROM ubuntu:16.04
 
-# Set the working directory to /app
+RUN apt-get update -y && \
+    apt-get install -y python-pip python-dev
+
+# We copy just the requirements.txt first to leverage Docker cache
+COPY ./requirements.txt /app/requirements.txt
+
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-ADD . /app
+RUN pip install -r requirements.txt
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
+COPY . /app
 
-# Make port 80 available to the world outside this container
-EXPOSE 80
+ENTRYPOINT [ "python" ]
 
-# Define environment variable
-ENV NAME World
-
-# Run app.py when the container launches
-CMD ["python", "app.py"]
+CMD [ "app.py" ]

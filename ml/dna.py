@@ -45,6 +45,25 @@ def import_data(source):
 
     return dataset, additional_columns
 
+def import_data_frame(dataset):
+    # quantify our data
+    dataset.gender = pd.Categorical(dataset.gender)
+    dataset['gender_num'] = dataset.gender.cat.codes
+
+    dataset.language = pd.Categorical(dataset.language)
+    dataset['language_num'] = dataset.language.cat.codes
+    
+    dataset['interests'] = dataset.apply(lambda x: x.interests.split(';'), axis=1)
+    interests = pd.get_dummies(dataset['interests'].apply(pd.Series).stack()).sum(level=0)
+    additional_columns = interests.columns.get_values().tolist()
+    print(additional_columns)
+    dataset = dataset.merge(interests, on=dataset.index)
+    #print(dataset)
+    #dataset['geohash'] = dataset.apply(lambda x: gh.encode(x.lat, x.lng, precision=5), axis=1)
+    #dataset['id'] = dataset.index
+
+    return dataset, additional_columns
+
 # plot dataset
 dataset, additional_columns = import_data("userData.csv")
 
