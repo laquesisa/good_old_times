@@ -2,31 +2,47 @@ import pandas as pd
 import pygeohash as gh
 from scipy.cluster.hierarchy import dendrogram, linkage
 import matplotlib.pyplot as plt
+from sklearn.cluster import AgglomerativeClustering
 
-# import dataset
-dataset = pd.read_csv("userData.csv")
+def plot_hierarchical_clustering(dataset):
+    plotable = dataset[['birthyear', 'lat', 'lng', 'gender_num', 'language_num']]
+    linked = linkage(plotable, 'single')
 
-# quantify our data
-dataset.gender = pd.Categorical(dataset.gender)
-dataset['gender_num'] = dataset.gender.cat.codes
+    labelList = dataset.name.values
 
-dataset.language = pd.Categorical(dataset.language)
-dataset['language_num'] = dataset.language.cat.codes
+    plt.figure(figsize=(10, 7))  
+    dendrogram(linked,  
+                orientation='left',
+                labels=labelList,
+                distance_sort='descending',
+                show_leaf_counts=True)
+    plt.show()
 
-#dataset['geohash'] = dataset.apply(lambda x: gh.encode(x.lat, x.lng, precision=5), axis=1)
-#dataset['id'] = dataset.index
+def plot_agglomerative_cluster(dataset):
+    plotable = dataset[['birthyear', 'lat', 'lng', 'gender_num', 'language_num']]
+    cluster = AgglomerativeClustering(n_clusters=3, affinity='euclidean', linkage='ward')
+    return cluster.fit_predict(plotable)
+
+def import_data(source):
+    # import dataset
+    dataset = pd.read_csv(source)
+
+    # quantify our data
+    dataset.gender = pd.Categorical(dataset.gender)
+    dataset['gender_num'] = dataset.gender.cat.codes
+
+    dataset.language = pd.Categorical(dataset.language)
+    dataset['language_num'] = dataset.language.cat.codes
+
+    #dataset['geohash'] = dataset.apply(lambda x: gh.encode(x.lat, x.lng, precision=5), axis=1)
+    #dataset['id'] = dataset.index
+
+    return dataset
 
 # plot dataset
-plotable = dataset.iloc[:, [1, 3, 4, 6, 7]]
-print(plotable)
-linked = linkage(plotable, 'single')
+dataset = import_data("userData.csv")
+clusters= plot_agglomerative_cluster(dataset)
+dataset['category'] = clusters
+print(dataset)
 
-labelList = dataset.name.values
-
-plt.figure(figsize=(10, 7))  
-dendrogram(linked,  
-            orientation='left',
-            labels=labelList,
-            distance_sort='descending',
-            show_leaf_counts=True)
-plt.show()
+plot_hierarchical_clustering(dataset)
