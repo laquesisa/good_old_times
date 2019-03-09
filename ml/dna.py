@@ -4,8 +4,8 @@ from scipy.cluster.hierarchy import dendrogram, linkage
 import matplotlib.pyplot as plt
 from sklearn.cluster import AgglomerativeClustering
 
-def plot_hierarchical_clustering(dataset):
-    plotable = dataset[['birthyear', 'lat', 'lng', 'gender_num', 'language_num']]
+def plot_hierarchical_clustering(dataset, columns):
+    plotable = dataset[columns]
     linked = linkage(plotable, 'single')
 
     labelList = dataset.name.values
@@ -18,10 +18,10 @@ def plot_hierarchical_clustering(dataset):
                 show_leaf_counts=True)
     plt.show()
 
-def plot_agglomerative_cluster(dataset):
-    plotable = dataset[['birthyear', 'lat', 'lng', 'gender_num', 'language_num']]
+def plot_agglomerative_cluster(dataset, columns):
+    mlData = dataset[columns]
     cluster = AgglomerativeClustering(n_clusters=3, affinity='euclidean', linkage='ward')
-    return cluster.fit_predict(plotable)
+    return cluster.fit_predict(mlData)
 
 def import_data(source):
     # import dataset
@@ -33,16 +33,25 @@ def import_data(source):
 
     dataset.language = pd.Categorical(dataset.language)
     dataset['language_num'] = dataset.language.cat.codes
-
+    
+    dataset['interests'] = dataset.apply(lambda x: x.interests.split(';'), axis=1)
+    interests = pd.get_dummies(dataset['interests'].apply(pd.Series).stack()).sum(level=0)
+    additional_columns = interests.columns.get_values().tolist()
+    print(additional_columns)
+    dataset = dataset.merge(interests, on=dataset.index)
+    #print(dataset)
     #dataset['geohash'] = dataset.apply(lambda x: gh.encode(x.lat, x.lng, precision=5), axis=1)
     #dataset['id'] = dataset.index
 
-    return dataset
+    return dataset, additional_columns
 
 # plot dataset
-dataset = import_data("userData.csv")
-clusters= plot_agglomerative_cluster(dataset)
-dataset['category'] = clusters
-print(dataset)
+dataset, additional_columns = import_data("userData.csv")
 
-plot_hierarchical_clustering(dataset)
+columns = ['birthyear', 'lat', 'lng', 'gender_num', 'language_num'] + additional_columns
+
+clusters= plot_agglomerative_cluster(dataset, columns)
+dataset['category'] = clusters
+#print(dataset[['name', 'category']] )
+
+plot_hierarchical_clustering(dataset, columns)
