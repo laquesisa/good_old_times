@@ -1,14 +1,17 @@
 import pandas as pd
+import pygeohash as gh
 
-names = ["Name", "Birthyear", "Language", "LocationLat", "LocationLong", "Gender"]
+# import dataset
 dataset = pd.read_csv("userData.csv")
 
-#raw_data = pd.Categorical(dataset)
-dataset.Gender = pd.Categorical(dataset.Gender)
-dataset['GenderNum'] = dataset.Gender.cat.codes
+# quantify our data
+dataset.gender = pd.Categorical(dataset.gender)
+dataset['gender_num'] = dataset.gender.cat.codes
 
-dataset.Language = pd.Categorical(dataset.Language)
-dataset['LanguageNum'] = dataset.Language.cat.codes
+dataset.language = pd.Categorical(dataset.language)
+dataset['language_num'] = dataset.language.cat.codes
+
+dataset['geohash'] = dataset.apply(lambda x: gh.encode(x.lat, x.lng, precision=5), axis=1)
 
 print(dataset)
 
