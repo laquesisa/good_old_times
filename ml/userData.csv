@@ -1,11 +1,12 @@
-name,birthyear,language,lat,lng,gender
-Stefanie Fessler,1999,German,47.051419,8.307365,f
-Laura Lenhardt,1996,German,47.442828,9.377822,f
-Alexander Davis,1999,English,51.496614,-0.052920,m
-Dana Shmaria,1998,English,46.943531,7.387048,f
-Armin Windlin,1997,English,47.377174,8.540527,m
-Chris Germann,1993,German,47.404883,8.567818,m
-John Houslay,1999,French,51.477255,0.003776,m
-Angela Mohajer,1998,English,51.466045,0.032507,f
-Magnus Jhaveri,1998,English,51.488550,-0.56541,m
-Daniel Buergin,1996,German,46.942674,7.397257,m
+name,birthyear,language,lat,lng,gender,interests
+Stefanie Fessler,1999,German,47.051419,8.307365,f,swim;dance;jazz
+Laura Lenhardt,1996,German,47.442828,9.377822,f,swim
+Alexander Davis,1999,English,51.496614,-0.052920,m,dance
+Larissa Stadelmann,1999,German,46.802353,7.159060,f,cats;france
+Dana Shmaria,1998,English,46.943531,7.387048,f,cats;dogs;fish
+Armin Windlin,1997,English,47.377174,8.540527,m,jazz;violin;cats
+Chris Germann,1993,German,47.404883,8.567818,m,carrots;cooking;running
+John Houslay,1999,French,51.477255,0.003776,m,knitting;grandchildren;gardening
+Angela Mohajer,1998,English,51.466045,0.032507,f,gardening;jazz;france
+Magnus Jhaveri,1998,English,51.488550,-0.56541,m,germany;dance
+Daniel Buergin,1996,German,46.942674,7.397257,m,knitting;dogs
