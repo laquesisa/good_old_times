@@ -1,4 +1,4 @@
-Name,Birthyear,Language,LocationLat,LocationLong,Gender
+name,birthyear,language,lat,lng,gender
 Stefanie Fessler,1999,German,47.051419,8.307365,f
 Laura Lenhardt,1996,German,47.442828,9.377822,f
 Alexander Davis,1999,English,51.496614,-0.052920,m
