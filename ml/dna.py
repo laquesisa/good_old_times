@@ -1,22 +1,22 @@
 import pandas as pd
-import pygeohash as gh
-from scipy.cluster.hierarchy import dendrogram, linkage
-import matplotlib.pyplot as plt
+# import pygeohash as gh
+# from scipy.cluster.hierarchy import dendrogram, linkage
+# import matplotlib.pyplot as plt
 from sklearn.cluster import AgglomerativeClustering
 
-def plot_hierarchical_clustering(dataset, columns):
-    plotable = dataset[columns]
-    linked = linkage(plotable, 'single')
+# def plot_hierarchical_clustering(dataset, columns):
+#     plotable = dataset[columns]
+#     linked = linkage(plotable, 'single')
 
-    labelList = dataset.name.values
+#     labelList = dataset.name.values
 
-    plt.figure(figsize=(10, 7))  
-    dendrogram(linked,  
-                orientation='left',
-                labels=labelList,
-                distance_sort='descending',
-                show_leaf_counts=True)
-    plt.show()
+#     plt.figure(figsize=(10, 7))  
+#     dendrogram(linked,  
+#                 orientation='left',
+#                 labels=labelList,
+#                 distance_sort='descending',
+#                 show_leaf_counts=True)
+#     plt.show()
 
 def plot_agglomerative_cluster(dataset, columns):
     mlData = dataset[columns]
@@ -64,13 +64,13 @@ def import_data_frame(dataset):
 
     return dataset, additional_columns
 
-# plot dataset
-dataset, additional_columns = import_data("userData.csv")
+        # # plot dataset
+        # dataset, additional_columns = import_data("userData.csv")
 
-columns = ['birthyear', 'lat', 'lng', 'gender_num', 'language_num'] + additional_columns
+        # columns = ['birthyear', 'lat', 'lng', 'gender_num', 'language_num'] + additional_columns
 
-clusters= plot_agglomerative_cluster(dataset, columns)
-dataset['category'] = clusters
-#print(dataset[['name', 'category']] )
+        # clusters= plot_agglomerative_cluster(dataset, columns)
+        # dataset['category'] = clusters
+        # #print(dataset[['name', 'category']] )
 
-plot_hierarchical_clustering(dataset, columns)
+        # plot_hierarchical_clustering(dataset, columns)
