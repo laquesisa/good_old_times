@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>My Matches</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script>
+        let message;
+        let responseDiv = document.getElementById('response');
+        message = httpGet('http://52.236.151.170/users/5c8425b8b0e05205ec9d5b01');
+        responseDiv.innerHTML = message;
+
+        function httpGet(theUrl) {
+            let xmlHttp = new XMLHttpRequest();
+            xmlHttp.open("GET", theUrl);
+            xmlHttp.setRequestHeader("Content-type", "application/json");
+            xmlHttp.send();
+            xmlHttp.onreadystatechange=(e)=>{return xmlHttp.responseText}
+
+        }
+    </script>
+</head>
+<body onload="httpGet();">
+<header>
+    <nav class="navbar">
+        <a class="navbar-brand got" href="index.html">Good old Times</a>
+        <div class="navbar-right">
+            <a class="navbar-brand" href="index.html">Home</a>
+            <a class="navbar-brand" href="vision.html">Vision</a>
+            <a class="navbar-brand" href="register.html">Register</a>
+            <a class="navbar-brand" href="matches.html">My Matches</a>
+        </div>
+    </nav>
+</header>
+
+<div class="mainbody">
+    <h2>My Matches</h2>
+    <div class="visioncontainer" id="response">
+
+    </div>
+</div>
+
+</body>
+</html>
