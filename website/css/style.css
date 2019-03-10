@@ -101,7 +101,7 @@ a {
     color: #ecdbc9;
 }
 
-h1, h2 {
+h1, h2, blockquote {
     font-family: 'game_of_thronesregular', Arial, sans-serif;
     color: #83092e;
 }
@@ -116,7 +116,9 @@ h2 {
 }
 
 h3 {
-    color: #ab3f60;
+    color: #ecdbc9;
+    text-align: left;
+    font-weight: bold;
 }
 
 .mainbody {
@@ -178,3 +180,6 @@ h3 {
 
 }
 
+blockquote{
+    margin-top: 2em;
+}
