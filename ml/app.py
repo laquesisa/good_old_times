@@ -19,8 +19,8 @@ app = Flask(__name__)
 def hello():
     return "hello"
 
-@app.route('/users/<user_id>', methods = ['GET'])
-@crossdomain(origin='*')
+@app.route('/users/<user_id>', methods = ['GET', 'OPTIONS'])
+@crossdomain(origin='*', methods=['GET', 'OPTIONS', 'HEAD'])
 def get_recommended_user(user_id):
     if request.method == 'GET':
         user = usercollection.find_one({"_id": ObjectId(user_id)})
@@ -57,12 +57,15 @@ def create_user():
         # if not JsonInputs(request).validate():
         #     print(errors)
         #     return "Please validate data"
-        json = request.json
+        json = request.get_json()
+        print(request.form)
+        print(json)
         try:
             validate(instance=json, schema=schema)
         except ValidationError as error:
+            print(error.message)
             url ="http://good-old-times.azurewebsites.net/register.html"
-            return redirect(url, code=400, response=error.message)
+            return redirect(url, code=400)
         user_id = usercollection.insert_one(json).inserted_id
         
         users = pd.DataFrame(list(usercollection.find()))
