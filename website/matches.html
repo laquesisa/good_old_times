@@ -9,22 +9,95 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     <script>
-        let message;
-        let responseDiv = document.getElementById('response');
-        message = httpGet('http://52.236.151.170/users/5c8425b8b0e05205ec9d5b01');
-        responseDiv.innerHTML = message;
-
         function httpGet(theUrl) {
-            let xmlHttp = new XMLHttpRequest();
-            xmlHttp.open("GET", theUrl);
-            xmlHttp.setRequestHeader("Content-type", "application/json");
-            xmlHttp.send();
-            xmlHttp.onreadystatechange=(e)=>{return xmlHttp.responseText}
+            let responseDiv = document.getElementById('responsecontainer');
+            let json = fetch(theUrl).then(function (response) {
+                return response.json();
+            }).then(function (myJson) {
+                let json = JSON.parse(JSON.stringify(myJson));
+
+                json.forEach(function (element) {
+                    let container = document.createElement("div");
+                    container.classList.add("matchcontainer");
+
+                    let person = document.createElement("div");
+
+                    let namespan = document.createElement("span");
+                    namespan.classList.add("matchdetail");
+                    let nametxt = document.createTextNode(element.name);
+                    namespan.appendChild(nametxt);
+
+                    let yearspan = document.createElement("span");
+                    yearspan.classList.add("matchdetail");
+                    let yeartxt = document.createTextNode(element.birthyear);
+                    yearspan.appendChild(yeartxt);
+
+                    let genderspan = document.createElement("span");
+                    genderspan.classList.add("matchdetail");
+                    let gendertxt = document.createTextNode(element.gender);
+                    genderspan.appendChild(gendertxt);
+
+                    person.appendChild(namespan);
+                    person.appendChild(yearspan);
+                    person.appendChild(genderspan);
+                    container.appendChild(person);
+
+                    let interests = document.createElement("div");
+
+                    let interestspan = document.createElement("span");
+                    interestspan.classList.add("matchdetail");
+                    let interesttxt = document.createTextNode(element.interests.split(";").join(", "));
+                    interestspan.appendChild(interesttxt);
+                    interests.appendChild(interestspan)
+
+                    container.appendChild(interests);
+
+                    let geo = document.createElement("div");
+
+                    let langspan = document.createElement("span");
+                    langspan.classList.add("matchdetail");
+                    let langtxt = document.createTextNode(element.language);
+                    langspan.appendChild(langtxt);
+                    geo.appendChild(langspan);
+
+                    let latspan = document.createElement("span");
+                    latspan.classList.add("matchdetail");
+                    let lattxt = document.createTextNode("Latitude: " + element.lat);
+                    latspan.appendChild(lattxt);
+                    geo.appendChild(latspan);
+
+                    let longspan = document.createElement("span");
+                    longspan.classList.add("matchdetail");
+                    let longtxt = document.createTextNode("Longitude: " + element.lng);
+                    longspan.appendChild(longtxt);
+                    geo.appendChild(longspan);
+
+                    container.appendChild(geo)
+                    let system = document.createElement("div");
+
+
+                    let catspan = document.createElement("span");
+                    catspan.classList.add("matchdetail");
+                    let cattxt = document.createTextNode("Category: " + element.category);
+                    catspan.appendChild(cattxt);
+                    system.appendChild(catspan);
+
+                    let permspan = document.createElement("span");
+                    permspan.classList.add("matchdetail");
+                    let permtxt = document.createTextNode("Permission: " + element.perm);
+                    permspan.appendChild(permtxt);
+                    system.appendChild(permspan);
+                    container.appendChild(system);
+
+                    responseDiv.appendChild(container);
+                })
+
+            });
 
         }
     </script>
 </head>
-<body onload="httpGet();">
+<body onload="httpGet('http://52.236.151.170/users/5c8425b8b0e05205ec9d5b01');">
 <header>
     <nav class="navbar">
         <a class="navbar-brand got" href="index.html">Good old Times</a>
@@ -39,7 +112,7 @@
 
 <div class="mainbody">
     <h2>My Matches</h2>
-    <div class="visioncontainer" id="response">
+    <div class="visioncontainer" id="responsecontainer">
 
     </div>
 </div>

@@ -62,9 +62,17 @@ nav > a:first-child {
     font-family: 'game_of_thronesregular', Arial, sans-serif;
 }
 
-.visioncontainer {
+.visioncontainer, .matchcontainer {
     margin: 1em 0 1em 0;
     display: inline-block;
+}
+
+.matchcontainer {
+    border: 2px solid #83092e;
+    padding: 0.5em;
+    border-radius: 0.4em;
+    width: 45%;
+    margin-right: 5%;
 }
 
 .visioncontainer:first-child {
@@ -163,5 +171,10 @@ h3 {
 .margin-ver-1 {
     margin-top: 1em;
     margin-bottom: 1em;
+}
+
+.matchdetail {
+    margin-right: 0.5em;
+
 }
 
