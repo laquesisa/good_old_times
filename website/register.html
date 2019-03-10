@@ -2,9 +2,140 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Register</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 </head>
 <body>
+    <header>
+        <nav class="navbar navbar-dark fixed-top bg-dark">
+            <a class="navbar-brand" href="index.html">Home</a>
+            <a class="navbar-brand" href="vision.html">Vision</a>
+            <a class="navbar-brand" href="register.html">Register</a>
+        </nav>
+    </header>
+    <div id="registration process">
+        <h3>Registration</h3>
+    </div>
+    <div>
+        <button id="startRegistration" class="btn-primary">Start Registration</button>
+    </div>
+    <div>
+        <form>
+            <div class="form-group">
+                <label for="name" class="control-label">Name</label>
+                <textarea id="name" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="birthyear" class="control-label">Birth year</label>
+                <textarea id="birthyear" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="gender" class="control-label">Gender</label>
+                <textarea id="gender" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="location" class="control-label">Location</label>
+                <textarea id="location" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="interests" class="control-label">Interests</label>
+                <textarea id="interests" class="form-control"></textarea>
+            </div>
+        </form>
+
+    </div>
+
+    <!-- Speech SDK REFERENCE -->
+    <script src="microsoft.cognitiveservices.speech.sdk.bundle.js"></script>
+
+    <!-- Speech SDK USAGE -->
+    <script>
+        // On document load resolve the Speech SDK dependency
+        function Initialize(onComplete) {
+            if (!!window.SpeechSDK) {
+                document.getElementById('content').style.display = 'block';
+                document.getElementById('warning').style.display = 'none';
+                onComplete(window.SpeechSDK);
+            }
+        }
+    </script>
+    <!-- Speech Speech SDK Authorization token -->
+    <script>
+        // Note: Replace the URL with a valid endpoint to retrieve
+        //       authorization tokens for your subscription.
+
+        // An authorization token is a more secure method to authenticate for a browser deployment as
+        // it allows the subscription keys to be kept secure on a server and a 10 minute use token to be
+        // handed out to clients from an endpoint that can be protected from unauthorized access.
+        let authorizationEndpoint = "C:\\good_old_times\\website\\token.php";
+
+        function RequestAuthorizationToken() {
+            if (authorizationEndpoint) {
+                let a = new XMLHttpRequest();
+                a.open("GET", authorizationEndpoint);
+                a.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                a.send("");
+                a.onload = function () {
+                    let token = JSON.parse(atob(this.responseText.split(".")[1]));
+                    region = token.region;
+                    authorizationToken = this.responseText;
+                    key = "using authorization token (hit F5 to refresh)";
+                    console.log("Got an authorization token: " + token);
+                }
+            }
+        }
+    </script>
+    <script>
+        let key = "7452a939d37f4cd9b6879c3e966f9b0a";
+        let region = "westeurope";
+        const language = "en-GB";
+        let authorizationToken;
+        startRegistrationBtn = document.getElementById("startRegistration");
+        nameText = document.getElementById("name");
+        birthyearText = document.getElementById("birthYear");
+        genderText = document.getElementById("gender");
+        locationText = document.getElementById("location");
+        interestsText = document.getElementById("interests");
+        let lastRecognized;
+
+        // Start Registration with button click
+        startRegistrationBtn.addEventListener("click", function () {
+            nameText.innerHTML = "";
+
+            const audioConfig = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
+            let speechConfig;
+            if (authorizationToken) {
+                speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(authorizationToken, region);
+            } else {
+                if (key === "" || key === "YOUR_SPEECH_API_KEY") {
+                    alert("Please enter your Cognitive Services Speech subscription key!");
+                    return;
+                }
+                speechConfig = SpeechSDK.SpeechConfig.fromSubscription(key, region);
+            }
+
+            speechConfig.speechRecognitionLanguage = language;
+            let reco = new SpeechSDK.SpeechRecognizer(speechConfig, audioConfig);
+
+            reco.recognizing = function (s, e) {
+                window.console.log(e);
+                nameText.innerHTML = lastRecognized + e.result.text;
+            };
+
+            // The event recognized signals that a final recognition result is received.
+            // This is the final event that a phrase has been recognized.
+            // For continuous recognition, you will get one recognized event for each phrase recognized.
+            reco.recognized = function (s, e) {
+                window.console.log(e);
+            }
+
+        })
+    </script>
 
 </body>
 </html>
