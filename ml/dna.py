@@ -20,7 +20,13 @@ from sklearn.cluster import AgglomerativeClustering
 
 def plot_agglomerative_cluster(dataset, columns):
     mlData = dataset[columns]
-    cluster = AgglomerativeClustering(n_clusters=3, affinity='euclidean', linkage='ward')
+    column_num = dataset.shape[0]
+    cluster_num = 3
+    if column_num > 15:
+        cluster_num = column_num / 5
+    if column_num < 3:
+        cluster_num = column_num
+    cluster = AgglomerativeClustering(n_clusters=cluster_num, affinity='euclidean', linkage='ward')
     return cluster.fit_predict(mlData)
 
 def import_data(source):
