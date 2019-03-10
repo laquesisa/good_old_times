@@ -1,0 +1,6 @@
+html {
+    height: 100%;
+    width: 100%;
+    background: url("../img/oldwoman.jpg") no-repeat center center fixed;
+    background-size: cover;
+}
