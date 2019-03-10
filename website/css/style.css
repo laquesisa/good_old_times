@@ -74,7 +74,7 @@ nav > a:first-child{
 .visiontext{
     width: 65%;
     height: 100%;
-    vertical-align: middle;
+    text-align: justify;
 }
 
 .visionimg{
