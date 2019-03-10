@@ -1,10 +1,12 @@
 from flask import Flask
 from flask import request
-from flask import jsonify
+from bson.json_util import dumps
 from pymongo import MongoClient
 import pandas as pd
 from dna import import_data_frame, plot_agglomerative_cluster
 from bson.objectid import ObjectId
+from jsonschema import validate, ValidationError
+
 client = MongoClient('mongodb://goodoldtimes:HN88VIootmZYoM1feiOq0cqpReDHOJ3wdnF5EAbD02E0qNZrLVlSTSQXuMi9XPuNPX55cbK5E4ol4m8cbYIBXg==@goodoldtimes.documents.azure.com:10255/?ssl=true&replicaSet=globaldb')
 db = client['goodoldtimes']
 
@@ -23,7 +25,7 @@ def get_recommended_user(user_id):
         category = user['category']
         users = usercollection.find({"_id": {'$ne': ObjectId(user_id)}, "category": category})
 
-        return jsonify(list(users))
+        return dumps(list(users))
         result = []
         for user in users:
             print(user)
@@ -36,13 +38,29 @@ def get_recommended_user(user_id):
 @app.route('/users', methods = ['POST'])
 def create_user():
     if request.method == 'POST':
-        json = request.get_json()
-        # name = json["name"]
-        # age = json["age"]
-        # user = {
-        #     'name': 'Alex'
-        # }
-        # user_id = usercollection.insert_one(user).inserted_id
+        schema = {
+            "type" : "object",
+            "properties" : {
+                "name" : {"type" : "string"},
+                "birthyear" : {"type" : "string"},
+                "language" : {"enum" : ["German", "French"]},
+                "lat" : {"type" : "string"},
+                "lng" : {"type" : "string"},
+                "gender" : {"enum" : ["m", "f"]},
+                "interests" : {"type" : "string"},
+            },
+            "required": ["name", "birthyear", "language", "lat", "lng", "gender", "interests"]
+        }
+
+        # if not JsonInputs(request).validate():
+        #     print(errors)
+        #     return "Please validate data"
+        json = request.json
+        try:
+            validate(instance=json, schema=schema)
+        except ValidationError as error:
+            return str(error).split('\n', 1)[0] 
+        user_id = usercollection.insert_one(json).inserted_id
         
         users = pd.DataFrame(list(usercollection.find()))
         # print(users)
@@ -60,8 +78,10 @@ def create_user():
 
         #modify/update the information for <user_id>
         data = request.form
-        # return user_id
-        return "hello"
+        return str(user_id)
     else:
         return "hello"
         # POST Error 405 Method Not Allowed
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=80)
