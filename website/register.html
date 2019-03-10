@@ -11,20 +11,23 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-dark fixed-top bg-dark">
+<header>
+    <nav class="navbar">
+        <a class="navbar-brand got" href="index.html">Good old Times</a>
+        <div class="navbar-right">
             <a class="navbar-brand" href="index.html">Home</a>
             <a class="navbar-brand" href="vision.html">Vision</a>
             <a class="navbar-brand" href="register.html">Register</a>
-        </nav>
-    </header>
-    <div id="registration process">
-        <h3>Registration</h3>
+        </div>
+    </nav>
+</header>
+<div id="registration process" class="mainbody">
+    <h2>Registration</h2>
+
+    <div class="margin-top-2">
+        <button id="startRegistration" class="btn-register">Start Registration</button>
     </div>
-    <div>
-        <button id="startRegistration" class="btn-primary">Start Registration</button>
-    </div>
-    <div>
+    <div class="margin-ver-1">
         <form>
             <div class="form-group">
                 <label for="name" class="control-label">Name</label>
@@ -49,93 +52,94 @@
         </form>
 
     </div>
+</div>
 
-    <!-- Speech SDK REFERENCE -->
-    <script src="microsoft.cognitiveservices.speech.sdk.bundle.js"></script>
+<!-- Speech SDK REFERENCE -->
+<script src="microsoft.cognitiveservices.speech.sdk.bundle.js"></script>
 
-    <!-- Speech SDK USAGE -->
-    <script>
-        // On document load resolve the Speech SDK dependency
-        function Initialize(onComplete) {
-            if (!!window.SpeechSDK) {
-                document.getElementById('content').style.display = 'block';
-                document.getElementById('warning').style.display = 'none';
-                onComplete(window.SpeechSDK);
+<!-- Speech SDK USAGE -->
+<script>
+    // On document load resolve the Speech SDK dependency
+    function Initialize(onComplete) {
+        if (!!window.SpeechSDK) {
+            document.getElementById('content').style.display = 'block';
+            document.getElementById('warning').style.display = 'none';
+            onComplete(window.SpeechSDK);
+        }
+    }
+</script>
+<!-- Speech Speech SDK Authorization token -->
+<script>
+    // Note: Replace the URL with a valid endpoint to retrieve
+    //       authorization tokens for your subscription.
+
+    // An authorization token is a more secure method to authenticate for a browser deployment as
+    // it allows the subscription keys to be kept secure on a server and a 10 minute use token to be
+    // handed out to clients from an endpoint that can be protected from unauthorized access.
+    let authorizationEndpoint = "C:\\good_old_times\\website\\token.php";
+
+    function RequestAuthorizationToken() {
+        if (authorizationEndpoint) {
+            let a = new XMLHttpRequest();
+            a.open("GET", authorizationEndpoint);
+            a.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            a.send("");
+            a.onload = function () {
+                let token = JSON.parse(atob(this.responseText.split(".")[1]));
+                region = token.region;
+                authorizationToken = this.responseText;
+                key = "using authorization token (hit F5 to refresh)";
+                console.log("Got an authorization token: " + token);
             }
         }
-    </script>
-    <!-- Speech Speech SDK Authorization token -->
-    <script>
-        // Note: Replace the URL with a valid endpoint to retrieve
-        //       authorization tokens for your subscription.
+    }
+</script>
+<script>
+    let key = "7452a939d37f4cd9b6879c3e966f9b0a";
+    let region = "westeurope";
+    const language = "en-GB";
+    let authorizationToken;
+    startRegistrationBtn = document.getElementById("startRegistration");
+    nameText = document.getElementById("name");
+    birthyearText = document.getElementById("birthYear");
+    genderText = document.getElementById("gender");
+    locationText = document.getElementById("location");
+    interestsText = document.getElementById("interests");
+    let lastRecognized;
 
-        // An authorization token is a more secure method to authenticate for a browser deployment as
-        // it allows the subscription keys to be kept secure on a server and a 10 minute use token to be
-        // handed out to clients from an endpoint that can be protected from unauthorized access.
-        let authorizationEndpoint = "C:\\good_old_times\\website\\token.php";
+    // Start Registration with button click
+    startRegistrationBtn.addEventListener("click", function () {
+        nameText.innerHTML = "";
 
-        function RequestAuthorizationToken() {
-            if (authorizationEndpoint) {
-                let a = new XMLHttpRequest();
-                a.open("GET", authorizationEndpoint);
-                a.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                a.send("");
-                a.onload = function () {
-                    let token = JSON.parse(atob(this.responseText.split(".")[1]));
-                    region = token.region;
-                    authorizationToken = this.responseText;
-                    key = "using authorization token (hit F5 to refresh)";
-                    console.log("Got an authorization token: " + token);
-                }
+        const audioConfig = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
+        let speechConfig;
+        if (authorizationToken) {
+            speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(authorizationToken, region);
+        } else {
+            if (key === "" || key === "YOUR_SPEECH_API_KEY") {
+                alert("Please enter your Cognitive Services Speech subscription key!");
+                return;
             }
+            speechConfig = SpeechSDK.SpeechConfig.fromSubscription(key, region);
         }
-    </script>
-    <script>
-        let key = "7452a939d37f4cd9b6879c3e966f9b0a";
-        let region = "westeurope";
-        const language = "en-GB";
-        let authorizationToken;
-        startRegistrationBtn = document.getElementById("startRegistration");
-        nameText = document.getElementById("name");
-        birthyearText = document.getElementById("birthYear");
-        genderText = document.getElementById("gender");
-        locationText = document.getElementById("location");
-        interestsText = document.getElementById("interests");
-        let lastRecognized;
 
-        // Start Registration with button click
-        startRegistrationBtn.addEventListener("click", function () {
-            nameText.innerHTML = "";
+        speechConfig.speechRecognitionLanguage = language;
+        let reco = new SpeechSDK.SpeechRecognizer(speechConfig, audioConfig);
 
-            const audioConfig = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
-            let speechConfig;
-            if (authorizationToken) {
-                speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(authorizationToken, region);
-            } else {
-                if (key === "" || key === "YOUR_SPEECH_API_KEY") {
-                    alert("Please enter your Cognitive Services Speech subscription key!");
-                    return;
-                }
-                speechConfig = SpeechSDK.SpeechConfig.fromSubscription(key, region);
-            }
+        reco.recognizing = function (s, e) {
+            window.console.log(e);
+            nameText.innerHTML = lastRecognized + e.result.text;
+        };
 
-            speechConfig.speechRecognitionLanguage = language;
-            let reco = new SpeechSDK.SpeechRecognizer(speechConfig, audioConfig);
+        // The event recognized signals that a final recognition result is received.
+        // This is the final event that a phrase has been recognized.
+        // For continuous recognition, you will get one recognized event for each phrase recognized.
+        reco.recognized = function (s, e) {
+            window.console.log(e);
+        }
 
-            reco.recognizing = function (s, e) {
-                window.console.log(e);
-                nameText.innerHTML = lastRecognized + e.result.text;
-            };
-
-            // The event recognized signals that a final recognition result is received.
-            // This is the final event that a phrase has been recognized.
-            // For continuous recognition, you will get one recognized event for each phrase recognized.
-            reco.recognized = function (s, e) {
-                window.console.log(e);
-            }
-
-        })
-    </script>
+    })
+</script>
 
 </body>
 </html>
