@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, redirect
 from flask import request
 from bson.json_util import dumps
 from pymongo import MongoClient
@@ -7,7 +7,7 @@ from dna import import_data_frame, plot_agglomerative_cluster
 from bson.objectid import ObjectId
 from jsonschema import validate, ValidationError
 from flask import Response
-
+from CORSDecorator import crossdomain
 client = MongoClient('mongodb://goodoldtimes:HN88VIootmZYoM1feiOq0cqpReDHOJ3wdnF5EAbD02E0qNZrLVlSTSQXuMi9XPuNPX55cbK5E4ol4m8cbYIBXg==@goodoldtimes.documents.azure.com:10255/?ssl=true&replicaSet=globaldb')
 db = client['goodoldtimes']
 
@@ -20,6 +20,7 @@ def hello():
     return "hello"
 
 @app.route('/users/<user_id>', methods = ['GET'])
+@crossdomain(origin='*')
 def get_recommended_user(user_id):
     if request.method == 'GET':
         user = usercollection.find_one({"_id": ObjectId(user_id)})
@@ -60,8 +61,8 @@ def create_user():
         try:
             validate(instance=json, schema=schema)
         except ValidationError as error:
-            return Response(dumps({'error':error.message}), status=400,  mimetype='application/json')
-            return str(error.message)
+            url ="http://good-old-times.azurewebsites.net/register.html"
+            return redirect(url, code=400, response=error.message)
         user_id = usercollection.insert_one(json).inserted_id
         
         users = pd.DataFrame(list(usercollection.find()))
