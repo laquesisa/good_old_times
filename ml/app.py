@@ -6,6 +6,7 @@ import pandas as pd
 from dna import import_data_frame, plot_agglomerative_cluster
 from bson.objectid import ObjectId
 from jsonschema import validate, ValidationError
+from flask import Response
 
 client = MongoClient('mongodb://goodoldtimes:HN88VIootmZYoM1feiOq0cqpReDHOJ3wdnF5EAbD02E0qNZrLVlSTSQXuMi9XPuNPX55cbK5E4ol4m8cbYIBXg==@goodoldtimes.documents.azure.com:10255/?ssl=true&replicaSet=globaldb')
 db = client['goodoldtimes']
@@ -59,7 +60,8 @@ def create_user():
         try:
             validate(instance=json, schema=schema)
         except ValidationError as error:
-            return str(error).split('\n', 1)[0] 
+            return Response(dumps({'error':error.message}), status=400,  mimetype='application/json')
+            return str(error.message)
         user_id = usercollection.insert_one(json).inserted_id
         
         users = pd.DataFrame(list(usercollection.find()))
