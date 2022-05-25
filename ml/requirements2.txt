@@ -67,7 +67,7 @@ ptyprocess==0.6.0
 pycparser==2.19
 pygeohash==1.2.0
 Pygments==2.3.1
-PyJWT==1.7.1
+PyJWT==2.4.0
 pylint==1.9.4
 pymongo==3.7.2
 pyparsing==2.3.1
